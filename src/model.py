@@ -1,46 +1,50 @@
-'''
-This is a sample class for a model. You may choose to use it as-is or make any changes to it.
-This has been provided just to give you an idea of how to structure your model class.
-'''
+import os
+import cv2
+from openvino.inference_engine import IECore, IENetwork
 
-class Model_X:
-    '''
-    Class for the Face Detection Model.
-    '''
-    def __init__(self, model_name, device='CPU', extensions=None):
-        '''
-        TODO: Use this to set your instance variables.
-        '''
-        raise NotImplementedError
+class Model:
+    def __init__(self):
+        self.core = None
+        self.network = None
+        self.input_blob = None
+        self.output_blob = None
+        self.exec_network = None
+        self.infer_request = None
 
-    def load_model(self):
-        '''
-        TODO: You will need to complete this method.
-        This method is for loading the model to the device specified by the user.
-        If your model requires any Plugins, this is where you can load them.
-        '''
-        raise NotImplementedError
+    def load_model(self, model, device = 'CPU', cpu_extensions = None):
+        model_structure = model
+        model_weights = os.path.splitext(model_xml)[0] + ".bin"
 
-    def predict(self, image):
-        '''
-        TODO: You will need to complete this method.
-        This method is meant for running predictions on the input image.
-        '''
-        raise NotImplementedError
+        self.core = IECore()
+        self.network = IENetwork(model = model_structure, weights = model_weights)
 
-    def check_model(self):
-        raise NotImplementedError
+        if cpu_extensions is not None:
+            self.core.add_extension(cpu_extension, device)
+
+        supported_layers = self.core.query_network(network = self.network, device_name = device)
+        
+        unsupported_layers = [layer for layer in self.network.layers.keys() if layer not in supported_layers]
+        if len(unsupported_layers) != 0:
+            print("Unsupported layers found: {}".format(unsupported_layers))
+            print("Check whether extensions are available to add to IECore.")
+            exit(1)
+            
+        self.exec_network = self.core.load_network(self.network, device_name = device, num_requests = 1)
+
+        self.input_blob = next(iter(self.network.inputs))
+        self.output_blob = next(iter(self.network.outputs))
+
+    def get_input_shape(self):
+        return self.network.inputs[self.input_blob].shape
 
     def preprocess_input(self, image):
-    '''
-    Before feeding the data into the model for inference,
-    you might have to preprocess it. This function is where you can do that.
-    '''
-        raise NotImplementedError
+        input_shape = self.get_input_shape()
 
-    def preprocess_output(self, outputs):
-    '''
-    Before feeding the output of this model to the next model,
-    you might have to preprocess the output. This function is where you can do that.
-    '''
-        raise NotImplementedError
+        image = cv2.resize(image, (input_shape[3], input_shape[2]))
+        image = image.transpose((2, 0, 1))
+        image = image.reshape(1, *image.shape)
+
+        return image
+
+    def wait(self):
+        return self.exec_network.requests[0].wait(-1)

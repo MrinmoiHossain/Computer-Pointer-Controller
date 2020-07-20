@@ -3,7 +3,7 @@ import cv2
 
 class FaceDetectionModel(Model):
     def __init__(self, model, device = 'CPU', extensions = None):
-        Model.__init__()
+        Model.__init__(self)
 
         self.load_model(model, device, extensions)
 

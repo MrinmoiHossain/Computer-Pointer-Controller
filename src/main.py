@@ -76,6 +76,39 @@ def infer_on_stream(args):
 
     logging.info("*********** Model Load Completed ***********")
 
+    feeder = InputFeeder('video', input_file)
+    feeder.load_data()
+
+    frame_count = 0
+    face_detect_infer_time = 0
+
+    while True:
+        try:
+            frame = next(feeder.next_batch())
+        except StopIteration:
+            break
+
+        key_pressed = cv2.waitKey(60)
+        frame_count += 1
+
+        image = face_detection_model.preprocess_input(frame)
+
+        start_time = time.time()
+        outputs = face_detection_model.predict(image)
+        face_detect_infer_time += (time.time() - start_time)
+        out_frame, faces = face_detection_model.preprocess_output(outputs, frame, prob_threshold)
+
+        if key_pressed == 27:
+            break
+
+    if frame_count > 0:
+        logging.info("*********** Model Inference Time ****************")
+        logging.info("Face Detection Model: {:.1f} ms.".format(1000 * face_detect_infer_time / frame_count))
+        logging.info("*********** Model Inference Completed ***********")
+
+    feeder.close()
+    cv2.destroyAllWindows()
+
 def main():
     args = build_argparser().parse_args()
     logfile_config()

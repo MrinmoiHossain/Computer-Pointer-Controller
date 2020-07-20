@@ -5,12 +5,24 @@ import logging
 from argparse import ArgumentParser
 from input_feeder import InputFeeder
 from face_detection import FaceDetectionModel
+from facial_landmarks_detection import FacialLandmarksDetectionModel
+from head_pose_estimation import HeadPoseEstimationModel
+from gaze_estimation import GazeEstimationModel
 
 def build_argparser():
     parser = ArgumentParser()
 
     parser.add_argument("-mfd", "--faceDetectionModel", type=str, required=True,
-                        help="Specify path of xml file of face detection model")
+                        help="Path of xml file of face detection model")
+
+    parser.add_argument("-mfl", "--facialLandmarksModel", type=str, required=True,
+                        help="Path of xml file of facial landmarks detection model")
+
+    parser.add_argument("-mhp", "--headPoseModel", type=str, required=True,
+                        help="Path of xml file of head pose estimation model")
+
+    parser.add_argument("-mge", "--gazeModel", type=str, required=True,
+                        help="Path of xml file of gaze estimation model")
 
     parser.add_argument("-i", "--input", type=str, required=True,
                         help="Path to image or video file")
@@ -35,22 +47,37 @@ def logfile_config():
                         handlers = [logging.FileHandler("GazeApp.log"), logging.StreamHandler()])
 
 def infer_on_stream(args):
-    face_detection_model_file = args.mfd
+    face_detection_model_file = args.faceDetectionModel
+    facial_landmarks_detection_model_file = args.facialLandmarksModel
+    head_pose_estimation_model_file = args.headPoseModel
+    gaze_estimation_model_file = args.gazeModel
 
-    input_file = args.i
-    device_name = args.d
-    cpu_extension = args.l
-    prob_threshold = args.pt
+    input_file = args.input
+    device_name = args.device
+    cpu_extension = args.cpu_extension
+    prob_threshold = args.prob_threshold
 
-    logging.info("*********** Model Load Time ***********")
+    logging.info("*********** Model Load Time ***************")
     start_time = time.time()
     face_detection_model = FaceDetectionModel(face_detection_model_file, device_name, cpu_extension)
-    logging.info("Face Detection Model: {:.1f}ms.".format(time.time() - start_time))
+    logging.info("Face Detection Model: {:.1f} ms.".format(1000 * (time.time() - start_time)))
+
+    start_time = time.time()
+    facial_landmarks_detection_model = FacialLandmarksDetectionModel(facial_landmarks_detection_model_file, device_name, cpu_extension)
+    logging.info("Facial Landmarks Detection Model: {:.1f} ms.".format(1000 * (time.time() - start_time)))
+
+    start_time = time.time()
+    head_pose_estimation_model = HeadPoseEstimationModel(head_pose_estimation_model_file, device_name, cpu_extension)
+    logging.info("Head Pose Estimation Model: {:.1f} ms.".format(1000 * (time.time() - start_time)))
+
+    start_time = time.time()
+    gaze_estimation_model = GazeEstimationModel(gaze_estimation_model_file, device_name, cpu_extension)
+    logging.info("Gaze Estimation Model: {:.1f} ms.".format(1000 * (time.time() - start_time)))
 
     logging.info("*********** Model Load Completed ***********")
 
 def main():
-    agrs = build_argparser().parse_args()
+    args = build_argparser().parse_args()
     logfile_config()
     infer_on_stream(args)
 

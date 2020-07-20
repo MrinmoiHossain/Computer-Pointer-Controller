@@ -1,5 +1,7 @@
 import os
 import time
+import cv2
+import logging
 from argparse import ArgumentParser
 from input_feeder import InputFeeder
 from face_detection import FaceDetectionModel
@@ -28,7 +30,6 @@ def build_argparser():
 
     return parser
     
-
 def infer_on_stream(args):
     face_detection_model_file = args.mfd
 
@@ -37,17 +38,10 @@ def infer_on_stream(args):
     cpu_extension = args.l
     prob_threshold = args.pt
 
-    start_load_time = time.time()
+    logging.info("*********** Model Load Time ***********")
+    start_time = time.time()
     face_detection_model = FaceDetectionModel(face_detection_model_file, device_name, cpu_extension)
-
-    total_load_time = time.time() - start_load_time
-
-    feeder = InputFeeder('video', input_file)
-    feeder.load_data()
-    ## TODO
-
-    ## TODO
-    feeder.close()
+    logging.info("Face Detection Model: {:.1f}ms.".format(time.time() - start_time))
 
 def main():
     agrs = build_argparser().parse_args()

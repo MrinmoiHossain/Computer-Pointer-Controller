@@ -46,5 +46,8 @@ class Model:
 
         return image
 
+    def exec_net(self, image, request_id = 0):
+        return self.exec_network.start_async(request_id, inputs = {self.input_blob: image})
+
     def wait(self):
         return self.exec_network.requests[0].wait(-1)

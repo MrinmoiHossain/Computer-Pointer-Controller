@@ -13,7 +13,7 @@ class Model:
 
     def load_model(self, model, device = 'CPU', cpu_extensions = None):
         model_structure = model
-        model_weights = os.path.splitext(model_xml)[0] + ".bin"
+        model_weights = os.path.splitext(model_structure)[0] + ".bin"
 
         self.core = IECore()
         self.network = IENetwork(model = model_structure, weights = model_weights)

@@ -30,6 +30,10 @@ def build_argparser():
 
     return parser
     
+def logfile_config():
+    logging.basicConfig(level = logging.INFO, format = "%(asctime)s [%(levelname)s] %(message)s",
+                        handlers = [logging.FileHandler("GazeApp.log"), logging.StreamHandler()])
+
 def infer_on_stream(args):
     face_detection_model_file = args.mfd
 
@@ -43,8 +47,11 @@ def infer_on_stream(args):
     face_detection_model = FaceDetectionModel(face_detection_model_file, device_name, cpu_extension)
     logging.info("Face Detection Model: {:.1f}ms.".format(time.time() - start_time))
 
+    logging.info("*********** Model Load Completed ***********")
+
 def main():
     agrs = build_argparser().parse_args()
+    logfile_config()
     infer_on_stream(args)
 
 

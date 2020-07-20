@@ -52,7 +52,7 @@ def infer_on_stream(args):
     head_pose_estimation_model_file = args.headPoseModel
     gaze_estimation_model_file = args.gazeModel
 
-    input_file = args.input
+    video_file = args.input
     device_name = args.device
     cpu_extension = args.cpu_extension
     prob_threshold = args.prob_threshold
@@ -76,7 +76,7 @@ def infer_on_stream(args):
 
     logging.info("*********** Model Load Completed ***********")
 
-    feeder = InputFeeder('video', input_file)
+    feeder = InputFeeder('video', video_file)
     feeder.load_data()
 
     frame_count = 0

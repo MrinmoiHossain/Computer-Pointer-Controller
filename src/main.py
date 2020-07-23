@@ -40,6 +40,9 @@ def build_argparser():
                         help="Probability threshold for detections filtering"
                         "(0.6 by default)")
 
+    parser.add_argument("-o", "--output_path", default='/result/', type=str,
+                        help="Output video path")
+
     return parser
     
 def logfile_config():
@@ -56,6 +59,7 @@ def infer_on_stream(args):
     device_name = args.device
     cpu_extension = args.cpu_extension
     prob_threshold = args.prob_threshold
+    output_path = args.output_path
 
     logging.info("*********** Model Load Time ***************")
     start_time = time.time()
@@ -97,6 +101,8 @@ def infer_on_stream(args):
         outputs = face_detection_model.predict(image)
         face_detect_infer_time += (time.time() - start_time)
         out_frame, faces = face_detection_model.preprocess_output(outputs, frame, prob_threshold)
+
+        cv2.imshow("output", out_frame)
 
         if key_pressed == 27:
             break

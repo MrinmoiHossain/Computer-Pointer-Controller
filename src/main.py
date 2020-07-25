@@ -102,7 +102,16 @@ def infer_on_stream(args):
         face_detect_infer_time += (time.time() - start_time)
         out_frame, faces = face_detection_model.preprocess_output(outputs, frame, prob_threshold)
 
-        cv2.imshow("output", out_frame)
+        for face in faces:
+            crop_image = frame[face[1]:face[3], face[0]:face[2]]
+            image = facial_landmarks_detection_model.preprocess_input(crop_image)
+
+            start_time = time.time()
+            outputs = facial_landmarks_detection_model.predict(image)
+            facial_landmarks_infer_time += (time.time() - start_time)
+            out_frame, left_eye_point, right_eye_point = facial_landmarks_detection_model.preprocess_output(outputs, out_frame, face)
+
+            cv2.imshow("output-facial", out_frame)
 
         if key_pressed == 27:
             break
@@ -110,6 +119,7 @@ def infer_on_stream(args):
     if frame_count > 0:
         logging.info("*********** Model Inference Time ****************")
         logging.info("Face Detection Model: {:.1f} ms.".format(1000 * face_detect_infer_time / frame_count))
+        logging.info("Facial Landmarks Detection Model: {:.1f} ms.".format(1000 * facial_landmarks_infer_time / frame_count))
         logging.info("*********** Model Inference Completed ***********")
 
     feeder.close()

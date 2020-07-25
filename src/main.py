@@ -85,6 +85,7 @@ def infer_on_stream(args):
 
     frame_count = 0
     face_detect_infer_time = 0
+    facial_landmarks_infer_time = 0
 
     while True:
         try:

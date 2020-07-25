@@ -13,7 +13,6 @@ class FaceDetectionModel(Model):
         if self.wait() == 0:
             outputs = self.exec_network.requests[0].outputs[self.output_blob]
             return outputs
-            # image, detections = self.preprocess_output(outputs, image, threshold)
         
     def preprocess_output(self, outputs, image, threshold = 0.6):
         width = int(image.shape[1])

@@ -86,6 +86,7 @@ def infer_on_stream(args):
     frame_count = 0
     face_detect_infer_time = 0
     facial_landmarks_infer_time = 0
+    head_pose_infer_time = 0
 
     while True:
         try:
@@ -112,6 +113,14 @@ def infer_on_stream(args):
             facial_landmarks_infer_time += (time.time() - start_time)
             out_frame, left_eye_point, right_eye_point = facial_landmarks_detection_model.preprocess_output(outputs, out_frame, face)
 
+
+            image = head_pose_estimation_model.preprocess_input(crop_image)
+
+            start_time = time.time()
+            outputs = head_pose_estimation_model.predict(image)
+            head_pose_infer_time += (time.time() - start_time)
+            out_frame, headpose_angels_list = head_pose_estimation_model.preprocess_output(outputs, out_frame)
+
             cv2.imshow("output-facial", out_frame)
 
         if key_pressed == 27:
@@ -121,6 +130,7 @@ def infer_on_stream(args):
         logging.info("*********** Model Inference Time ****************")
         logging.info("Face Detection Model: {:.1f} ms.".format(1000 * face_detect_infer_time / frame_count))
         logging.info("Facial Landmarks Detection Model: {:.1f} ms.".format(1000 * facial_landmarks_infer_time / frame_count))
+        logging.info("Head Pose Detection Model: {:.1f} ms.".format(1000 * head_pose_infer_time / frame_count))
         logging.info("*********** Model Inference Completed ***********")
 
     feeder.close()

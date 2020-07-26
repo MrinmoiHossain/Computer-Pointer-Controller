@@ -8,6 +8,7 @@ from face_detection import FaceDetectionModel
 from facial_landmarks_detection import FacialLandmarksDetectionModel
 from head_pose_estimation import HeadPoseEstimationModel
 from gaze_estimation import GazeEstimationModel
+from mouse_controller import MouseController
 
 def build_argparser():
     parser = ArgumentParser()
@@ -61,6 +62,8 @@ def infer_on_stream(args):
     prob_threshold = args.prob_threshold
     output_path = args.output_path
 
+    mouse_control = MouseController("low", "fast")
+
     logging.info("*********** Model Load Time ***************")
     start_time = time.time()
     face_detection_model = FaceDetectionModel(face_detection_model_file, device_name, cpu_extension)
@@ -87,6 +90,7 @@ def infer_on_stream(args):
     face_detect_infer_time = 0
     facial_landmarks_infer_time = 0
     head_pose_infer_time = 0
+    gaze_infer_time = 0
 
     while True:
         try:
@@ -97,6 +101,7 @@ def infer_on_stream(args):
         key_pressed = cv2.waitKey(60)
         frame_count += 1
 
+        ## Face Detecton Model
         image = face_detection_model.preprocess_input(frame)
 
         start_time = time.time()
@@ -106,6 +111,8 @@ def infer_on_stream(args):
 
         for face in faces:
             crop_image = frame[face[1]:face[3], face[0]:face[2]]
+
+            ## Facial Landmarks Detecton Model
             image = facial_landmarks_detection_model.preprocess_input(crop_image)
 
             start_time = time.time()
@@ -113,7 +120,7 @@ def infer_on_stream(args):
             facial_landmarks_infer_time += (time.time() - start_time)
             out_frame, left_eye_point, right_eye_point = facial_landmarks_detection_model.preprocess_output(outputs, out_frame, face)
 
-
+            ## Head Pose Estimation Model
             image = head_pose_estimation_model.preprocess_input(crop_image)
 
             start_time = time.time()
@@ -121,7 +128,16 @@ def infer_on_stream(args):
             head_pose_infer_time += (time.time() - start_time)
             out_frame, headpose_angels_list = head_pose_estimation_model.preprocess_output(outputs, out_frame)
 
+            ## Gaze Estimation Model
+            out_frame, left_eye, right_eye  = gaze_estimation_model.preprocess_input(out_frame, crop_image, left_eye_point, right_eye_point)
+
+            start_time = time.time()
+            outputs = gaze_estimation_model.predict(left_eye, right_eye, headpose_angels_list)
+            gaze_infer_time += (time.time() - start_time)
+            out_frame, gazevector = gaze_estimation_model.preprocess_output(outputs, out_frame)
+
             cv2.imshow("output-facial", out_frame)
+            mouse_control.move(gazevector[0], gazevector[1])
 
         if key_pressed == 27:
             break
@@ -131,6 +147,7 @@ def infer_on_stream(args):
         logging.info("Face Detection Model: {:.1f} ms.".format(1000 * face_detect_infer_time / frame_count))
         logging.info("Facial Landmarks Detection Model: {:.1f} ms.".format(1000 * facial_landmarks_infer_time / frame_count))
         logging.info("Head Pose Detection Model: {:.1f} ms.".format(1000 * head_pose_infer_time / frame_count))
+        logging.info("Gaze Detection Model: {:.1f} ms.".format(1000 * gaze_infer_time / frame_count))
         logging.info("*********** Model Inference Completed ***********")
 
     feeder.close()

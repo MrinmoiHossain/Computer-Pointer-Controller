@@ -86,6 +86,8 @@ def infer_on_stream(args):
     feeder = InputFeeder('video', video_file)
     feeder.load_data()
 
+    out_video = cv2.VideoWriter(os.path.join('output_video.mp4'), cv2.VideoWriter_fourcc(*'avc1'), int(feeder.fps()/10), (1920, 1080), True)
+
     frame_count = 0
     face_detect_infer_time = 0
     facial_landmarks_infer_time = 0
@@ -136,7 +138,8 @@ def infer_on_stream(args):
             gaze_infer_time += (time.time() - start_time)
             out_frame, gazevector = gaze_estimation_model.preprocess_output(outputs, out_frame)
 
-            cv2.imshow("output-facial", out_frame)
+            cv2.imshow("Computer Pointer Control", out_frame)
+            out_video.write(out_frame)
             mouse_control.move(gazevector[0], gazevector[1])
 
         if key_pressed == 27:

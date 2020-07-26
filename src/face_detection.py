@@ -29,7 +29,7 @@ class FaceDetectionModel(Model):
                 xmax = int(box[5] * width)
                 ymax = int(box[6] * height)
 
-                cv2.rectangle(image, (xmin, ymin), (xmax, ymax), (255,0,0), 1)
+                cv2.rectangle(image, (xmin, ymin), (xmax, ymax), (0, 0, 0), 1)
                 faces.append([xmin, ymin,xmax, ymax])
 
         return image, faces

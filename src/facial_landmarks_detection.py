@@ -24,7 +24,7 @@ class FacialLandmarksDetectionModel(Model):
             x = int(normed_landmarks[i * 2] * width)
             y = int(normed_landmarks[i * 2 + 1] * height)
 
-            cv2.circle(image, (face[0] + x, face[1] + y), 30, (0, 255, i * 255), 2)
+            cv2.circle(image, (face[0] + x, face[1] + y), 30, (255, 0, 0), 2)
 
         left_eye_point = [normed_landmarks[0] * width, normed_landmarks[1] * height]
         right_eye_point = [normed_landmarks[2] * width, normed_landmarks[3] * height]

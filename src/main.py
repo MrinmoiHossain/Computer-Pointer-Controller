@@ -136,7 +136,7 @@ def infer_on_stream(args):
             start_time = time.time()
             outputs = gaze_estimation_model.predict(left_eye, right_eye, headpose_angels_list)
             gaze_infer_time += (time.time() - start_time)
-            out_frame, gazevector = gaze_estimation_model.preprocess_output(outputs, out_frame)
+            out_frame, gazevector = gaze_estimation_model.preprocess_output(outputs, out_frame, face, left_eye_point, right_eye_point)
 
             cv2.imshow("Computer Pointer Control", out_frame)
             out_video.write(out_frame)

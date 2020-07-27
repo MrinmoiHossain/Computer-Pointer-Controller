@@ -2,6 +2,8 @@
 
 In this project, used a gaze detection model to control the mouse pointer of your computer. By using the [Gaze Estimation](https://docs.openvinotoolkit.org/latest/omz_models_intel_gaze_estimation_adas_0002_description_gaze_estimation_adas_0002.html) model to estimate the gaze of the user's eyes and change the mouse pointer position accordingly. This project will demonstrate the ability to run multiple models in the same machine and coordinate the flow of data between those models.
 
+![Project Demo](./img/output_video.gif)
+
 ## How Project Works
 
 By using the InferenceEngine API from Intel's OpenVino ToolKit to build the project. The gaze estimation model requires three inputs:
@@ -97,6 +99,7 @@ python3 src/main.py -mfd models/face-detection-adas-binary-0001/FP32-INT1/face-d
 ├── img
 │   ├── FPS.png
 │   ├── Model_Loading_Time.png
+│   ├── output_video.gif
 │   ├── Project_Pipeline.png
 │   └── Total_Inference_Time.png
 ├── models
@@ -181,20 +184,34 @@ Arguments:
 ```
 
 ## Benchmarks
-*TODO:* Include the benchmark results of running your model on multiple hardwares and multiple model precisions. Your benchmarks can include: model loading time, input/output processing time, model inference time etc.
+In this project, Inference Time, FPS and Model Loading Time is checked for INT8, FP16, FP32 (except - Face Detection Model). The output graphs of the test are given below - 
+
+* [Benchmarks Test](https://github.com/MrinmoiHossain/Computer-Pointer-Controller/blob/master/src/Project_Benchmarks.ipynb)
+### Inference Time
+![Inference Time](./img/Total_Inference_Time.png)
+### Model Loading Time
+![Model Loading Time](./img/Model_Loading_Time.png)
+### FPS
+![FPS](./img/FPS.png)
 
 ## Results
-*TODO:* Discuss the benchmark results and explain why you are getting the results you are getting. For instance, explain why there is difference in inference time for FP32, FP16 and INT8 models.
+| Precision | Inference Time | Model Loading Time  |          FPS           |
+|:----------|:--------------:|:-------------------:|-----------------------:|
+|   INT8    |  1595880096.3  |  1.086348295211792  | 3.728350277564647e-07  |
+|   FP16    |  1595880258.7  |  0.6771125793457031 | 3.728349898160188e-07  |
+|   FP32    |  1595880351.3  |  0.6721317768096924 | 3.7283496818249225e-07 |
+
+* For, Inference time data see that there is not much difference for this three different precision models. Among this three precision, FP32 is higher because of higher precision value.
+* And, for FPS, it is also similar to the inference time. That's mean smaller difference for this three different precision models.
+* In, Model Loading time, INT8 precision model's time is much higher than any others because combination of precisions lead to higher weight of the model.
 
 ## Stand Out Suggestions
-This is where you can provide information about the stand out suggestions that you have attempted.
 
 ### Async Inference
-If you have used Async Inference in your code, benchmark the results and explain its effects on power and performance of your project.
+By using async inference will use the all cores of CPU improve performance with threading the ability to perform multiple inference at the same time. On the other side, at synchrounous inference, the inference request need to be waiting until the other inference request executed.
 
 ### Edge Cases
-There will be certain situations that will break your inference flow. For instance, lighting changes or multiple people in the frame. Explain some of the edge cases you encountered in your project and how you solved them to make your project more robust.
-
+* Multiple People: If there found more than one person in the image, the detection and pointer control would only detect first person that the models detect first.
 
 ## Resourses
 * [Inference Engine API Docs](https://docs.openvinotoolkit.org/latest/openvino_inference_engine_ie_bridges_python_docs_api_overview.html)

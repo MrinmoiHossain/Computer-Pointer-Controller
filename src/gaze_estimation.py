@@ -51,9 +51,28 @@ class GazeEstimationModel(Model):
             outputs = self.exec_network.requests[0].outputs[self.output_blob]
             return outputs
 
-    def preprocess_output(self, outputs, image):
+    def eye_draw(self, image, face, eye_point, x, y):
+        xmin, ymin, _, _ = face
+
+        x_center = eye_point[0]
+        y_center = eye_point[1]
+
+        eye_center_x = int(xmin + x_center)
+        eye_center_y = int(ymin + y_center)
+
+        cv2.arrowedLine(image, (eye_center_x, eye_center_y), (eye_center_x + int(x * 100), eye_center_y + int(-y * 100)), (0, 0, 255), 3)
+
+
+    def preprocess_output(self, outputs, image, face, left_eye_point, right_eye_point):
         x = outputs[0][0]
         y = outputs[0][1]
         z = outputs[0][2]
+
+        cv2.putText(image, "X:{:.1f}".format(x * 100), (20, 100), 0, 0.7, (0, 0, 255))
+        cv2.putText(image, "Y:{:.1f}".format(y * 100), (20, 120), 0, 0.7, (0, 0, 255))
+        cv2.putText(image, "Z:{:.1f}".format(z), (20, 140), 0, 0.7, (0, 0, 255))
+
+        self.eye_draw(image, face, left_eye_point, x, y)
+        self.eye_draw(image, face, right_eye_point, x, y)
 
         return image, [x, y, z]

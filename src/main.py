@@ -41,7 +41,7 @@ def build_argparser():
                         help="Probability threshold for detections filtering"
                         "(0.6 by default)")
 
-    parser.add_argument("-o", "--output_path", default='/result/', type=str,
+    parser.add_argument("-o", "--output_path", default='result/', type=str,
                         help="Output video path")
 
     return parser
@@ -60,11 +60,16 @@ def infer_on_stream(args):
     device_name = args.device
     cpu_extension = args.cpu_extension
     prob_threshold = args.prob_threshold
+
     output_path = args.output_path
+    if not os.path.exists(output_path):
+        os.mkdir(output_path)
 
     mouse_control = MouseController("low", "fast")
 
     logging.info("*********** Model Load Time ***************")
+    start_model_load_time = time.time()
+
     start_time = time.time()
     face_detection_model = FaceDetectionModel(face_detection_model_file, device_name, cpu_extension)
     logging.info("Face Detection Model: {:.1f} ms.".format(1000 * (time.time() - start_time)))
@@ -81,6 +86,7 @@ def infer_on_stream(args):
     gaze_estimation_model = GazeEstimationModel(gaze_estimation_model_file, device_name, cpu_extension)
     logging.info("Gaze Estimation Model: {:.1f} ms.".format(1000 * (time.time() - start_time)))
 
+    total_model_load_time = time.time() - start_model_load_time
     logging.info("*********** Model Load Completed ***********")
 
     feeder = InputFeeder('video', video_file)
@@ -88,6 +94,7 @@ def infer_on_stream(args):
 
     out_video = cv2.VideoWriter(os.path.join(output_path, 'output_video.mp4'), cv2.VideoWriter_fourcc(*'avc1'), int(feeder.fps()/10), (1920, 1080), True)
 
+    start_inference_time = 0
     frame_count = 0
     face_detect_infer_time = 0
     facial_landmarks_infer_time = 0
@@ -152,6 +159,22 @@ def infer_on_stream(args):
         logging.info("Head Pose Detection Model: {:.1f} ms.".format(1000 * head_pose_infer_time / frame_count))
         logging.info("Gaze Detection Model: {:.1f} ms.".format(1000 * gaze_infer_time / frame_count))
         logging.info("*********** Model Inference Completed ***********")
+
+    total_infer_time = time.time() - start_inference_time
+    total_inference_time = round(total_infer_time, 1)
+    fps = frame_count / total_inference_time
+    
+    with open(os.path.join(output_path, 'stats.txt'), 'w') as f:
+        f.write(str(total_inference_time)+'\n')
+        f.write(str(fps)+'\n')
+        f.write(str(total_model_load_time)+'\n')
+
+    logging.info("*********** Total Summary ****************")
+    logging.info(f"Total Model Load Time: {total_model_load_time}")
+    logging.info(f"Total Inference Time: {total_inference_time}")
+    logging.info(f"FPS: {fps}")
+    logging.info("*********** Total Summary ***********")
+    logging.info("*********** ************************* ***********")
 
     feeder.close()
     cv2.destroyAllWindows()

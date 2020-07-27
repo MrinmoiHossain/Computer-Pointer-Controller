@@ -44,6 +44,9 @@ def build_argparser():
     parser.add_argument("-o", "--output_path", default='result/', type=str,
                         help="Output video path")
 
+    parser.add_argument("-sv", "--show_video", type=str, default='yes',
+                        help="Output video show mode")                    
+
     return parser
     
 def logfile_config():
@@ -60,6 +63,7 @@ def infer_on_stream(args):
     device_name = args.device
     cpu_extension = args.cpu_extension
     prob_threshold = args.prob_threshold
+    show_video = args.show_video
 
     output_path = args.output_path
     if not os.path.exists(output_path):
@@ -145,9 +149,10 @@ def infer_on_stream(args):
             gaze_infer_time += (time.time() - start_time)
             out_frame, gazevector = gaze_estimation_model.preprocess_output(outputs, out_frame, face, left_eye_point, right_eye_point)
 
-            cv2.imshow("Computer Pointer Control", out_frame)
-            out_video.write(out_frame)
-            mouse_control.move(gazevector[0], gazevector[1])
+            if show_video == 'yes':
+                cv2.imshow("Computer Pointer Control", out_frame)
+                out_video.write(out_frame)
+                mouse_control.move(gazevector[0], gazevector[1])
 
         if key_pressed == 27:
             break

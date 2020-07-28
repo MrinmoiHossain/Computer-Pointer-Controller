@@ -112,8 +112,7 @@ def infer_on_stream(args):
     while True:
         try:
             frame = next(feeder.next_batch())
-        except StopIteration as e:
-            logging.exception("Input feeder ERROR: " + str(e))
+        except StopIteration:
             break
 
         key_pressed = cv2.waitKey(60)

@@ -85,7 +85,7 @@ python3 src/main.py -mfd models/face-detection-adas-binary-0001/FP32-INT1/face-d
                     -mfl models/landmarks-regression-retail-0009/FP16-INT8/landmarks-regression-retail-0009.xml \
 		            -mhp models/head-pose-estimation-adas-0001/FP16-INT8/head-pose-estimation-adas-0001.xml \
 		            -mge models/gaze-estimation-adas-0002/FP16-INT8/gaze-estimation-adas-0002.xml \
-                    -i bin/demo.mp4 -d "CPU" -sv "yes"
+                    -i bin/demo.mp4 -d "CPU" -o "result/" -flags fd fl hp ge
 ```
 
 ## Documentation
@@ -167,7 +167,7 @@ python3 src/main.py -mfd models/face-detection-adas-binary-0001/FP32-INT1/face-d
 Usage: main.py  [-h] -mfd FACEDETECTIONMODEL -mfl FACIALLANDMARKSMODEL 
                 -mhp HEADPOSEMODEL -mge GAZEESTIMATIONMODEL -i INPUT 
                 [-l CPU_EXTENSION] [-d DEVICE] [-pt PROB_THRESHOLD]
-                [-o OUTPUT] [-sv SHOW_VIDEO]
+                [-o OUTPUT] [-flags FLAG_VALUE]
 
 Arguments:
     -h, --help                      Show help message.
@@ -180,7 +180,9 @@ Arguments:
     -d, --device                    Specify the target device to infer on: "CPU, GPU, FPGA or MYRIAD is acceptable".
     -pt, --prob_threshold           Probability threshold for detections filtering (0.6 by default).
     -o, --output_path               Output video path.
-    -sv, --show_video               Output video show debug flag.
+    -flags, --preview_flag          Specify flag to show output like -flags ff fl(Space separated if multiple values). 
+                                    fd for Face Detection Model, fl for Facial Landmark Model,
+                                    hp for Head Pose Estimation Model, ge for Gaze Estimation Model.
 ```
 
 ## Benchmarks

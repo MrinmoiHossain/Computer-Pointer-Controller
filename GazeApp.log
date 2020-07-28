@@ -1,18 +1,18 @@
-2020-07-28 01:57:04,421 [INFO] *********** Model Load Time ***************
-2020-07-28 01:57:04,584 [INFO] Face Detection Model: 162.9 ms.
-2020-07-28 01:57:04,678 [INFO] Facial Landmarks Detection Model: 93.8 ms.
-2020-07-28 01:57:04,904 [INFO] Head Pose Estimation Model: 225.6 ms.
-2020-07-28 01:57:05,124 [INFO] Gaze Estimation Model: 220.0 ms.
-2020-07-28 01:57:05,124 [INFO] *********** Model Load Completed ***********
-2020-07-28 01:59:11,025 [INFO] *********** Model Inference Time ****************
-2020-07-28 01:59:11,026 [INFO] Face Detection Model: 31.7 ms.
-2020-07-28 01:59:11,026 [INFO] Facial Landmarks Detection Model: 0.7 ms.
-2020-07-28 01:59:11,026 [INFO] Head Pose Detection Model: 1.5 ms.
-2020-07-28 01:59:11,026 [INFO] Gaze Detection Model: 1.9 ms.
-2020-07-28 01:59:11,026 [INFO] *********** Model Inference Completed ***********
-2020-07-28 01:59:11,027 [INFO] *********** Total Summary ****************
-2020-07-28 01:59:11,027 [INFO] Total Model Load Time: 0.7031540870666504
-2020-07-28 01:59:11,027 [INFO] Total Inference Time: 1595879951.0
-2020-07-28 01:59:11,027 [INFO] FPS: 3.728350617019563e-07
-2020-07-28 01:59:11,027 [INFO] *********** Total Summary ***********
-2020-07-28 01:59:11,027 [INFO] *********** ************************* ***********
+2020-07-28 13:18:17,424 [INFO] *********** Model Load Time ***************
+2020-07-28 13:18:17,605 [INFO] Face Detection Model: 181.0 ms.
+2020-07-28 13:18:17,780 [INFO] Facial Landmarks Detection Model: 174.9 ms.
+2020-07-28 13:18:18,081 [INFO] Head Pose Estimation Model: 300.4 ms.
+2020-07-28 13:18:18,300 [INFO] Gaze Estimation Model: 218.9 ms.
+2020-07-28 13:18:18,300 [INFO] *********** Model Load Completed ***********
+2020-07-28 13:20:23,304 [INFO] *********** Model Inference Time ****************
+2020-07-28 13:20:23,304 [INFO] Face Detection Model: 33.0 ms.
+2020-07-28 13:20:23,304 [INFO] Facial Landmarks Detection Model: 0.9 ms.
+2020-07-28 13:20:23,304 [INFO] Head Pose Detection Model: 1.6 ms.
+2020-07-28 13:20:23,305 [INFO] Gaze Detection Model: 1.9 ms.
+2020-07-28 13:20:23,305 [INFO] *********** Model Inference Completed ***********
+2020-07-28 13:20:23,305 [INFO] *********** Total Summary ****************
+2020-07-28 13:20:23,305 [INFO] Total Model Load Time: 0.8763227462768555
+2020-07-28 13:20:23,306 [INFO] Total Inference Time: 1595920823.3
+2020-07-28 13:20:23,306 [INFO] FPS: 3.728255132166744e-07
+2020-07-28 13:20:23,306 [INFO] *********** Total Summary ***********
+2020-07-28 13:20:23,306 [INFO] *********** ************************* ***********

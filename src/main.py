@@ -42,11 +42,13 @@ def build_argparser():
                         help="Probability threshold for detections filtering"
                         "(0.6 by default)")
 
-    parser.add_argument("-o", "--output_path", default='result/', type=str,
-                        help="Output video path")
+    parser.add_argument("-flags", "--preview_flag", required=False, nargs='+', default=[],
+                        help="Specify flag to show output like -flags ff fl(Space separated if multiple values)"
+                             "fd for Face Detection Model, fl for Facial Landmark Model"
+                             "hp for Head Pose Estimation Model, ge for Gaze Estimation Model")
 
-    parser.add_argument("-sv", "--show_video", type=str, default='no',
-                        help="Output video show mode")                    
+    parser.add_argument("-o", "--output_path", default='result/', type=str,
+                        help="Output video path")                   
 
     return parser
     
@@ -64,6 +66,7 @@ def infer_on_stream(args):
     device_name = args.device
     cpu_extension = args.cpu_extension
     prob_threshold = args.prob_threshold
+    preview_flag = args.preview_flag
     show_video = args.show_video
 
     output_path = args.output_path
@@ -126,7 +129,7 @@ def infer_on_stream(args):
         start_time = time.time()
         outputs = face_detection_model.predict(image)
         face_detect_infer_time += (time.time() - start_time)
-        out_frame, faces = face_detection_model.preprocess_output(outputs, frame, prob_threshold)
+        out_frame, faces = face_detection_model.preprocess_output(outputs, frame, preview_flag, prob_threshold)
 
         for face in faces:
             crop_image = frame[face[1]:face[3], face[0]:face[2]]
@@ -137,7 +140,7 @@ def infer_on_stream(args):
             start_time = time.time()
             outputs = facial_landmarks_detection_model.predict(image)
             facial_landmarks_infer_time += (time.time() - start_time)
-            out_frame, left_eye_point, right_eye_point = facial_landmarks_detection_model.preprocess_output(outputs, out_frame, face)
+            out_frame, left_eye_point, right_eye_point = facial_landmarks_detection_model.preprocess_output(outputs, out_frame, face, preview_flag)
 
             ## Head Pose Estimation Model
             image = head_pose_estimation_model.preprocess_input(crop_image)
@@ -145,7 +148,7 @@ def infer_on_stream(args):
             start_time = time.time()
             outputs = head_pose_estimation_model.predict(image)
             head_pose_infer_time += (time.time() - start_time)
-            out_frame, headpose_angels_list = head_pose_estimation_model.preprocess_output(outputs, out_frame)
+            out_frame, headpose_angels_list = head_pose_estimation_model.preprocess_output(outputs, out_frame, preview_flag)
 
             ## Gaze Estimation Model
             out_frame, left_eye, right_eye  = gaze_estimation_model.preprocess_input(out_frame, crop_image, left_eye_point, right_eye_point)
@@ -153,12 +156,11 @@ def infer_on_stream(args):
             start_time = time.time()
             outputs = gaze_estimation_model.predict(left_eye, right_eye, headpose_angels_list)
             gaze_infer_time += (time.time() - start_time)
-            out_frame, gazevector = gaze_estimation_model.preprocess_output(outputs, out_frame, face, left_eye_point, right_eye_point)
+            out_frame, gazevector = gaze_estimation_model.preprocess_output(outputs, out_frame, face, left_eye_point, right_eye_point, preview_flag)
 
-            if show_video == 'yes':
-                cv2.imshow("Computer Pointer Control", out_frame)
-                out_video.write(out_frame)
-                mouse_control.move(gazevector[0], gazevector[1])
+            cv2.imshow("Computer Pointer Control", out_frame)
+            out_video.write(out_frame)
+            mouse_control.move(gazevector[0], gazevector[1])
 
         if key_pressed == 27:
             break

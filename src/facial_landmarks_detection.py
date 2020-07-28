@@ -14,7 +14,7 @@ class FacialLandmarksDetectionModel(Model):
             outputs = self.exec_network.requests[0].outputs[self.output_blob]
             return outputs
 
-    def preprocess_output(self, outputs, image, face):
+    def preprocess_output(self, outputs, image, face, preview_flag):
         normed_landmarks = outputs.reshape(1, 10)[0]
 
         height = face[3] - face[1]
@@ -24,7 +24,8 @@ class FacialLandmarksDetectionModel(Model):
             x = int(normed_landmarks[i * 2] * width)
             y = int(normed_landmarks[i * 2 + 1] * height)
 
-            cv2.circle(image, (face[0] + x, face[1] + y), 30, (255, 0, 0), 2)
+            if len(preview_flag) > 0 and "fl" in preview_flag:
+                cv2.circle(image, (face[0] + x, face[1] + y), 30, (255, 0, 0), 2)
 
         left_eye_point = [normed_landmarks[0] * width, normed_landmarks[1] * height]
         right_eye_point = [normed_landmarks[2] * width, normed_landmarks[3] * height]

@@ -63,16 +63,17 @@ class GazeEstimationModel(Model):
         cv2.arrowedLine(image, (eye_center_x, eye_center_y), (eye_center_x + int(x * 100), eye_center_y + int(-y * 100)), (0, 0, 255), 3)
 
 
-    def preprocess_output(self, outputs, image, face, left_eye_point, right_eye_point):
+    def preprocess_output(self, outputs, image, face, left_eye_point, right_eye_point, preview_flag):
         x = outputs[0][0]
         y = outputs[0][1]
         z = outputs[0][2]
 
-        cv2.putText(image, "X:{:.1f}".format(x * 100), (20, 100), 0, 0.7, (0, 0, 255))
-        cv2.putText(image, "Y:{:.1f}".format(y * 100), (20, 120), 0, 0.7, (0, 0, 255))
-        cv2.putText(image, "Z:{:.1f}".format(z), (20, 140), 0, 0.7, (0, 0, 255))
+        if len(preview_flag) > 0 and "ge" in preview_flag:
+            cv2.putText(image, "X:{:.1f}".format(x * 100), (20, 100), 0, 0.7, (0, 0, 255))
+            cv2.putText(image, "Y:{:.1f}".format(y * 100), (20, 120), 0, 0.7, (0, 0, 255))
+            cv2.putText(image, "Z:{:.1f}".format(z), (20, 140), 0, 0.7, (0, 0, 255))
 
-        self.eye_draw(image, face, left_eye_point, x, y)
-        self.eye_draw(image, face, right_eye_point, x, y)
+            self.eye_draw(image, face, left_eye_point, x, y)
+            self.eye_draw(image, face, right_eye_point, x, y)
 
         return image, [x, y, z]

@@ -14,7 +14,7 @@ class FaceDetectionModel(Model):
             outputs = self.exec_network.requests[0].outputs[self.output_blob]
             return outputs
         
-    def preprocess_output(self, outputs, image, threshold = 0.6):
+    def preprocess_output(self, outputs, image, preview_flag, threshold = 0.6):
         width = int(image.shape[1])
         height = int(image.shape[0])
         
@@ -29,7 +29,9 @@ class FaceDetectionModel(Model):
                 xmax = int(box[5] * width)
                 ymax = int(box[6] * height)
 
-                cv2.rectangle(image, (xmin, ymin), (xmax, ymax), (0, 0, 0), 1)
+                if len(preview_flag) > 0 and "fd" in preview_flag:
+                    cv2.rectangle(image, (xmin, ymin), (xmax, ymax), (0, 0, 0), 1)
+                    
                 faces.append([xmin, ymin,xmax, ymax])
 
         return image, faces

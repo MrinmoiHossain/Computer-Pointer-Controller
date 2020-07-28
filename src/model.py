@@ -25,8 +25,8 @@ class Model:
         
         unsupported_layers = [layer for layer in self.network.layers.keys() if layer not in supported_layers]
         if len(unsupported_layers) != 0:
-            print("Unsupported layers found: {}".format(unsupported_layers))
-            print("Check whether extensions are available to add to IECore.")
+            logging.error("Unsupported layers found: {}".format(unsupported_layers))
+            logging.error("Check whether extensions are available to add to IECore.")
             exit(1)
             
         self.exec_network = self.core.load_network(self.network, device_name = device, num_requests = 1)

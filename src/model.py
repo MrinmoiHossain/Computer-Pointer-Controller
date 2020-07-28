@@ -1,5 +1,6 @@
 import os
 import cv2
+import logging
 from openvino.inference_engine import IECore, IENetwork
 
 class Model:

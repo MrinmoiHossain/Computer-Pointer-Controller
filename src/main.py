@@ -1,4 +1,5 @@
 import os
+import sys
 import time
 import cv2
 import logging
@@ -94,7 +95,8 @@ def infer_on_stream(args):
         total_model_load_time = time.time() - start_model_load_time
         logging.info("*********** Model Load Completed ***********")
     except Exception as e:
-        logging.warning("Could not load the model for is ERROR: " + str(e))
+        logging.error("ERROR in model loading: " + str(e))
+        sys.exit(1)
 
 
     feeder = InputFeeder('video', video_file)

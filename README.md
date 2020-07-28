@@ -76,7 +76,7 @@ source /opt/intel/openvino/bin/setupvars.sh
 
 3. Install all the dependency packages for the project.
 ```bash
-pip install -r requirements.txt
+pip3 install -r requirements.txt
 ```
 
 4. Run the `main.py` file.
@@ -180,7 +180,7 @@ Arguments:
     -d, --device                    Specify the target device to infer on: "CPU, GPU, FPGA or MYRIAD is acceptable".
     -pt, --prob_threshold           Probability threshold for detections filtering (0.6 by default).
     -o, --output_path               Output video path.
-    -sv, --show_video               Output video show mode.
+    -sv, --show_video               Output video show debug flag.
 ```
 
 ## Benchmarks

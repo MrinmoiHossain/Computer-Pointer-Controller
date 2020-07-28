@@ -44,7 +44,7 @@ def build_argparser():
     parser.add_argument("-o", "--output_path", default='result/', type=str,
                         help="Output video path")
 
-    parser.add_argument("-sv", "--show_video", type=str, default='yes',
+    parser.add_argument("-sv", "--show_video", type=str, default='no',
                         help="Output video show mode")                    
 
     return parser
@@ -71,27 +71,31 @@ def infer_on_stream(args):
 
     mouse_control = MouseController("low", "fast")
 
-    logging.info("*********** Model Load Time ***************")
-    start_model_load_time = time.time()
+    try:
+        logging.info("*********** Model Load Time ***************")
+        start_model_load_time = time.time()
 
-    start_time = time.time()
-    face_detection_model = FaceDetectionModel(face_detection_model_file, device_name, cpu_extension)
-    logging.info("Face Detection Model: {:.1f} ms.".format(1000 * (time.time() - start_time)))
+        start_time = time.time()
+        face_detection_model = FaceDetectionModel(face_detection_model_file, device_name, cpu_extension)
+        logging.info("Face Detection Model: {:.1f} ms.".format(1000 * (time.time() - start_time)))
 
-    start_time = time.time()
-    facial_landmarks_detection_model = FacialLandmarksDetectionModel(facial_landmarks_detection_model_file, device_name, cpu_extension)
-    logging.info("Facial Landmarks Detection Model: {:.1f} ms.".format(1000 * (time.time() - start_time)))
+        start_time = time.time()
+        facial_landmarks_detection_model = FacialLandmarksDetectionModel(facial_landmarks_detection_model_file, device_name, cpu_extension)
+        logging.info("Facial Landmarks Detection Model: {:.1f} ms.".format(1000 * (time.time() - start_time)))
 
-    start_time = time.time()
-    head_pose_estimation_model = HeadPoseEstimationModel(head_pose_estimation_model_file, device_name, cpu_extension)
-    logging.info("Head Pose Estimation Model: {:.1f} ms.".format(1000 * (time.time() - start_time)))
+        start_time = time.time()
+        head_pose_estimation_model = HeadPoseEstimationModel(head_pose_estimation_model_file, device_name, cpu_extension)
+        logging.info("Head Pose Estimation Model: {:.1f} ms.".format(1000 * (time.time() - start_time)))
 
-    start_time = time.time()
-    gaze_estimation_model = GazeEstimationModel(gaze_estimation_model_file, device_name, cpu_extension)
-    logging.info("Gaze Estimation Model: {:.1f} ms.".format(1000 * (time.time() - start_time)))
+        start_time = time.time()
+        gaze_estimation_model = GazeEstimationModel(gaze_estimation_model_file, device_name, cpu_extension)
+        logging.info("Gaze Estimation Model: {:.1f} ms.".format(1000 * (time.time() - start_time)))
 
-    total_model_load_time = time.time() - start_model_load_time
-    logging.info("*********** Model Load Completed ***********")
+        total_model_load_time = time.time() - start_model_load_time
+        logging.info("*********** Model Load Completed ***********")
+    except Exception as e:
+        logging.warning("Could not load the model for is ERROR: " + str(e))
+
 
     feeder = InputFeeder('video', video_file)
     feeder.load_data()
@@ -108,7 +112,8 @@ def infer_on_stream(args):
     while True:
         try:
             frame = next(feeder.next_batch())
-        except StopIteration:
+        except StopIteration as e:
+            logging.exception("Input feeder ERROR: " + str(e))
             break
 
         key_pressed = cv2.waitKey(60)

@@ -85,7 +85,7 @@ python3 src/main.py -mfd models/face-detection-adas-binary-0001/FP32-INT1/face-d
                     -mfl models/landmarks-regression-retail-0009/FP16-INT8/landmarks-regression-retail-0009.xml \
 		            -mhp models/head-pose-estimation-adas-0001/FP16-INT8/head-pose-estimation-adas-0001.xml \
 		            -mge models/gaze-estimation-adas-0002/FP16-INT8/gaze-estimation-adas-0002.xml \
-                    -i bin/demo.mp4 -d "CPU"
+                    -i bin/demo.mp4 -d "CPU" -sv "yes"
 ```
 
 ## Documentation

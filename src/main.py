@@ -67,7 +67,6 @@ def infer_on_stream(args):
     cpu_extension = args.cpu_extension
     prob_threshold = args.prob_threshold
     preview_flag = args.preview_flag
-    show_video = args.show_video
 
     output_path = args.output_path
     if not os.path.exists(output_path):
